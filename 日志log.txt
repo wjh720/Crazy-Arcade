@@ -1,0 +1,33 @@
+现加入了state_creator.py文件
+已经把Tkinter与主程序完全分离
+在调用env.step()时会返回3个参数。
+(state,value,done)
+其中state为需要调用opencv才能使用的图像
+可以用work.py中注释的代码查看图像
+
+参数
+
+BOOM_R = 1   # boom explosion rage, from x to x+BOOM_R
+BOOM_T = 10   # time until explosion
+BOOM_N = 1   # initial number of boom
+GAME_ROUND = 100 #maximum game ronud
+REWARD_BOX = 1 #reward of box
+REWARD_ITEM = 1  #reward of item
+REWARD_KILL =100 #reawrd of kill opponent
+PUNISH = 100 #punishment
+
+游戏在100轮还未结束时会强制结束，并对每个人-PUNISH的收益
+
+work.py中加入了
+'''
+have_render=False
+'''
+开启可以看到可视化界面
+
+state.shape=(161, 207, 3)
+把action从'l,r,u,d,b,s'改到了'0,1,2,3,4,5'
+
+
+//
+//颜色分配也需要研究。感觉箱子和炸弹颜色接近，应该换一个？
+//
