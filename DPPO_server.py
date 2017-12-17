@@ -14,7 +14,6 @@ tensorflow r1.3
 gym 0.9.2
 """
 
-from tkinter import *
 import cv2
 import tensorflow as tf
 import numpy as np
