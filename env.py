@@ -404,7 +404,7 @@ class Maze(object):
         for A in actions:
             player_id=A[0]
             action=A[1]
-            if(action==4):
+            if(action==4 and self.players[player_id].boom_num+1<=self.players[player_id].max_boom_num):
                 value[player_id]+=REWARD_BOMB
         #PUNISH_PER_ROUND
         value[0]-=PUNISH_PER_ROUND

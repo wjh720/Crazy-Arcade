@@ -33,9 +33,9 @@ Map=\
  '#oo^#oo0#'
 ]
 
-EP_MAX = 1000
+EP_MAX = 500
 EP_LEN = 200
-N_WORKER = 2                # parallel workers
+N_WORKER = 1                # parallel workers
 GAMMA = 0.9                 # reward discount factor
 A_LR = 0.0001               # learning rate for actor
 C_LR = 0.0002               # learning rate for critic
@@ -108,7 +108,7 @@ class PPO(object):
                 [self.sess.run(self.atrain_op, {self.tfs: s, self.tfa: a, self.tfadv: adv}) for _ in range(UPDATE_STEP)]
                 [self.sess.run(self.ctrain_op, {self.tfs: s, self.tfdc_r: r}) for _ in range(UPDATE_STEP)]
 
-                if (GLOBAL_EP >= self.last_ep + 100):
+                if (GLOBAL_EP >= self.last_ep + 50):
                     print('Saving!')
                     self.saver.save(self.sess, '/home/icenter/tmp/Crazy/params', write_meta_graph=False)
                     self.last_ep = GLOBAL_EP
