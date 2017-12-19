@@ -22,7 +22,7 @@ decide
 BOOM_R = 1   # boom explosion rage, from x to x+BOOM_R
 BOOM_T = 10   # time until explosion
 BOOM_N = 1   # initial number of boom
-GAME_ROUND = 100 #maximum game ronud
+GAME_ROUND = 1000 #maximum game ronud
 REWARD_BOX = 1 #reward of box
 REWARD_ITEM = 1  #reward of item
 REWARD_KILL =100 #reawrd of kill opponent

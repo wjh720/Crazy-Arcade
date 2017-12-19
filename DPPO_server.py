@@ -35,12 +35,12 @@ Map=\
 
 EP_MAX = 100
 EP_LEN = 200
-N_WORKER = 2                # parallel workers
+N_WORKER = 4                # parallel workers
 GAMMA = 0.9                 # reward discount factor
 A_LR = 0.0001               # learning rate for actor
 C_LR = 0.0002               # learning rate for critic
 MIN_BATCH_SIZE = 256         # minimum batch size for updating PPO
-UPDATE_STEP = 10            # loop update operation n-steps
+UPDATE_STEP = 20            # loop update operation n-steps
 EPSILON = 0.2               # for clipping surrogate objective
 GAME = 'Pendulum-v0'
 S_DIM, S_shape, A_DIM, n_actions = 161 * 207 * 3, [None, 161, 207, 3], 1, 6         # state and action dimension
