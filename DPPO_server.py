@@ -97,10 +97,10 @@ class PPO(object):
         while not COORD.should_stop():
             if GLOBAL_EP < EP_MAX:
                 UPDATE_EVENT.wait()                     # wait until get batch of data
-                print('Start_update: %d, %d' % (QUEUE.qsize(), GLOBAL_UPDATE_COUNTER))
                 self.sess.run(self.update_oldpi_op)     # copy pi to old pi
                 data = [QUEUE.get() for _ in range(QUEUE.qsize())]      # collect data from all workers
                 data = np.vstack(data)
+                print('Start_update: %d, %d' % (data.shape[0], GLOBAL_UPDATE_COUNTER))
                 s, a, r = data[:, :S_DIM], data[:, S_DIM: S_DIM + A_DIM], data[:, -1:]
                 s = np.reshape(s, (-1, 161, 207, 3))
                 adv = self.sess.run(self.advantage, {self.tfs: s, self.tfdc_r: r})
