@@ -88,7 +88,7 @@ class PPO(object):
 
         if (Load):
             print('Loading!')
-            self.saver.restore(self.sess, '/home/zhj/tmp/params')
+            self.saver.restore(self.sess, '/home/icenter/tmp/Crazy/params')
         else:
             self.sess.run(tf.global_variables_initializer())
 
@@ -97,6 +97,7 @@ class PPO(object):
         while not COORD.should_stop():
             if GLOBAL_EP < EP_MAX:
                 UPDATE_EVENT.wait()                     # wait until get batch of data
+                print('Start_update')
                 self.sess.run(self.update_oldpi_op)     # copy pi to old pi
                 data = [QUEUE.get() for _ in range(QUEUE.qsize())]      # collect data from all workers
                 data = np.vstack(data)
@@ -109,7 +110,7 @@ class PPO(object):
 
                 if (GLOBAL_EP >= EP_MAX):
                     print('Saving!')
-                    self.saver.save(self.sess, '/home/zhj/tmp/params', write_meta_graph=False)
+                    self.saver.save(self.sess, '/home/icenter/tmp/Crazy/params', write_meta_graph=False)
                     self.last_ep = GLOBAL_EP
 
                 UPDATE_EVENT.clear()        # updating finished
