@@ -245,7 +245,7 @@ if __name__ == '__main__':
     load_PPO = PPO(Load=True)
     while True:
         s = env.reset()
-        for t in range(300):
+        for t in range(100):
             env.render()
             a = load_PPO.choose_action(s)
             baseline_a = base.choose_action(env, 1)

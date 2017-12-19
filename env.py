@@ -20,14 +20,15 @@ MAZE_W = -1  # grid width, given by initializing
 decide
 '''
 BOOM_R = 1   # boom explosion rage, from x to x+BOOM_R
-BOOM_T = 10   # time until explosion
+BOOM_T = 5   # time until explosion
 BOOM_N = 1   # initial number of boom
 GAME_ROUND = 100 #maximum game ronud
-REWARD_BOX = 1 #reward of box
-REWARD_ITEM = 1  #reward of item
+REWARD_BOX = 10 #reward of box
+REWARD_ITEM = 5  #reward of item
 REWARD_KILL =100 #reawrd of kill opponent
-PUNISH = 50 #punishment
-
+PUNISH = 0 #punishment
+REWARD_BOMB=5
+PUNISH_PER_ROUND=1
 
 class player:
     def __init__(self):
@@ -398,7 +399,16 @@ class Maze(object):
         STATE = state_creator.Get_State(self)
         self.accu_value[0] += value[0]
         self.accu_value[1] += value[1]
-        
+
+        #BOMB_REWARD
+        for A in actions:
+            player_id=A[0]
+            action=A[1]
+            if(action==4):
+                value[player_id]+=REWARD_BOMB
+        #PUNISH_PER_ROUND
+        value[0]-=PUNISH_PER_ROUND
+        value[1]-=PUNISH_PER_ROUND
 
         #game end
         if(self.remain_round==0):
