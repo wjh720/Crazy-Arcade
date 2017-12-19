@@ -39,7 +39,7 @@ N_WORKER = 10                # parallel workers
 GAMMA = 0.9                 # reward discount factor
 A_LR = 0.0001               # learning rate for actor
 C_LR = 0.0002               # learning rate for critic
-MIN_BATCH_SIZE = 256         # minimum batch size for updating PPO
+MIN_BATCH_SIZE = 1024         # minimum batch size for updating PPO
 UPDATE_STEP = 20            # loop update operation n-steps
 EPSILON = 0.2               # for clipping surrogate objective
 GAME = 'Pendulum-v0'
@@ -97,7 +97,7 @@ class PPO(object):
         while not COORD.should_stop():
             if GLOBAL_EP < EP_MAX:
                 UPDATE_EVENT.wait()                     # wait until get batch of data
-                print('Start_update')
+                print('Start_update: %d' % QUEUE.qsize())
                 self.sess.run(self.update_oldpi_op)     # copy pi to old pi
                 data = [QUEUE.get() for _ in range(QUEUE.qsize())]      # collect data from all workers
                 data = np.vstack(data)
