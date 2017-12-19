@@ -55,11 +55,19 @@ class PPO(object):
 
         # critic
         with tf.variable_scope('critic'):
-            conv1 = tf.layers.conv2d(self.tfs, 16, 8, 4, 'same', activation=tf.nn.relu)
-            conv2 = tf.layers.conv2d(conv1, 32, 4, 2, 'same', activation=tf.nn.relu)
-            flat = U.flattenallbut0(conv2)
-            l1 = tf.layers.dense(flat, 256, activation=tf.nn.relu)
-            self.v = tf.layers.dense(l1, 1)
+            '''
+            conv1 = tf.layers.conv2d(self.tfs, 32, 8, 4, 'valid', activation=tf.nn.relu)
+            conv2 = tf.layers.conv2d(conv1, 64, 4, 2, 'valid', activation=tf.nn.relu)
+            conv3 = tf.layers.conv2d(conv2, 64, 3, 1, 'valid', activation=tf.nn.relu)
+            flat = U.flattenallbut0(conv3)
+            l1 = tf.layers.dense(flat, 512, activation=tf.nn.relu)
+            '''
+            conv1 = tf.nn.relu(U.conv2d(self.tfs, 32, "l1", [8, 8], [4, 4], pad="VALID"))
+            conv2 = tf.nn.relu(U.conv2d(conv1, 64, "l2", [4, 4], [2, 2], pad="VALID"))
+            conv3 = tf.nn.relu(U.conv2d(conv2, 64, "l3", [3, 3], [1, 1], pad="VALID"))
+            flat = U.flattenallbut0(conv3)
+            den1 = tf.nn.relu(U.dense(flat, 512, 'lin', U.normc_initializer(1.0)))
+            self.v = U.dense(den1, 1, "value", U.normc_initializer(1.0))
             self.tfdc_r = tf.placeholder(tf.float32, [None, 1], 'discounted_r')
             self.advantage = self.tfdc_r - self.v
             self.closs = tf.reduce_mean(tf.square(self.advantage))
@@ -120,10 +128,11 @@ class PPO(object):
 
     def _build_anet(self, name, trainable):
         with tf.variable_scope(name):
-            conv1 = tf.nn.relu(U.conv2d(self.tfs, 16, "l1", [8, 8], [4, 4], pad="VALID", trainable=trainable))
-            conv2 = tf.nn.relu(U.conv2d(conv1, 32, "l2", [4, 4], [2, 2], pad="VALID", trainable=trainable))
-            flat = U.flattenallbut0(conv2)
-            den1 = tf.nn.relu(U.dense(flat, 256, 'lin', U.normc_initializer(1.0), trainable=trainable))
+            conv1 = tf.nn.relu(U.conv2d(self.tfs, 32, "l1", [8, 8], [4, 4], pad="VALID", trainable=trainable))
+            conv2 = tf.nn.relu(U.conv2d(conv1, 64, "l2", [4, 4], [2, 2], pad="VALID", trainable=trainable))
+            conv3 = tf.nn.relu(U.conv2d(conv2, 64, "l3", [3, 3], [1, 1], pad="VALID", trainable=trainable))
+            flat = U.flattenallbut0(conv3)
+            den1 = tf.nn.relu(U.dense(flat, 512, 'lin', U.normc_initializer(1.0), trainable=trainable))
             self.probs = tf.nn.softmax(U.dense(den1, n_actions, "logits", U.normc_initializer(0.01), trainable=trainable))
 
         params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope=name)
@@ -223,6 +232,7 @@ if __name__ == '__main__':
     GLOBAL_PPO = PPO()
 
     UPDATE_EVENT, ROLLING_EVENT = mp.Event(), mp.Event()
+    l = mp.Lock()
     UPDATE_EVENT.clear()            # not update now
     ROLLING_EVENT.set()             # start to roll out
     workers = [Worker(wid=i) for i in range(N_WORKER)]

@@ -108,7 +108,7 @@ class PPO(object):
                 [self.sess.run(self.atrain_op, {self.tfs: s, self.tfa: a, self.tfadv: adv}) for _ in range(UPDATE_STEP)]
                 [self.sess.run(self.ctrain_op, {self.tfs: s, self.tfdc_r: r}) for _ in range(UPDATE_STEP)]
 
-                if (GLOBAL_EP >= self.last_ep + 10):
+                if (GLOBAL_EP >= self.last_ep + 100):
                     print('Saving!')
                     self.saver.save(self.sess, '/home/icenter/tmp/Crazy/params', write_meta_graph=False)
                     self.last_ep = GLOBAL_EP
@@ -215,7 +215,7 @@ class Worker(object):
                     if len(GLOBAL_RUNNING_R) == 0: GLOBAL_RUNNING_R.append(ep_r)
                     else: GLOBAL_RUNNING_R.append(GLOBAL_RUNNING_R[-1]*0.9+ep_r*0.1)
                     GLOBAL_EP += 1
-                    print('{0:.1f}%'.format(GLOBAL_EP/EP_MAX*100), '|W%i' % self.wid,  '|Ep_r: %.2f' % ep_r,)
+                    print('%d|' % GLOBAL_EP, '{0:.1f}%'.format(GLOBAL_EP/EP_MAX*100), '|W%i' % self.wid,  '|Ep_r: %.2f' % ep_r,)
                     break
 
 
