@@ -17,7 +17,7 @@ gym 0.9.2
 import cv2
 import tensorflow as tf
 import numpy as np
-import threading, queue
+import multiprocessing as mp
 from env import Maze
 import util as U
 from baseline import baseline as base
@@ -92,7 +92,7 @@ class PPO(object):
         else:
             self.sess.run(tf.global_variables_initializer())
 
-    def update(self):
+    def update(self, QUEUE):
         global GLOBAL_UPDATE_COUNTER, GLOBAL_EP
         while not COORD.should_stop():
             if GLOBAL_EP < EP_MAX:
@@ -160,7 +160,7 @@ class Worker(object):
         self.env = Maze(Map)
         self.ppo = GLOBAL_PPO
 
-    def work(self):
+    def work(self, QUEUE):
         global GLOBAL_EP, GLOBAL_RUNNING_R, GLOBAL_UPDATE_COUNTER
         while not COORD.should_stop():
             s = self.env.reset()
@@ -222,22 +222,23 @@ class Worker(object):
 if __name__ == '__main__':
     GLOBAL_PPO = PPO()
 
-    UPDATE_EVENT, ROLLING_EVENT = threading.Event(), threading.Event()
+    UPDATE_EVENT, ROLLING_EVENT = mp.Event(), mp.Event()
     UPDATE_EVENT.clear()            # not update now
     ROLLING_EVENT.set()             # start to roll out
     workers = [Worker(wid=i) for i in range(N_WORKER)]
+    QUEUE = mp.Queue()  # workers putting data in this queue
     
     GLOBAL_UPDATE_COUNTER, GLOBAL_EP = 0, 0
     GLOBAL_RUNNING_R = []
     COORD = tf.train.Coordinator()
-    QUEUE = queue.Queue()           # workers putting data in this queue
+
     threads = []
     for worker in workers:          # worker threads
-        t = threading.Thread(target=worker.work, args=())
+        t = mp.Process(target=worker.work, args=(QUEUE, ))
         t.start()                   # training
         threads.append(t)
     # add a PPO updating thread
-    threads.append(threading.Thread(target=GLOBAL_PPO.update,))
+    threads.append(mp.Process(target=GLOBAL_PPO.update, args=(QUEUE, )))
     threads[-1].start()
 
     COORD.join(threads)
