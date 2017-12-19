@@ -35,7 +35,7 @@ Map=\
 
 EP_MAX = 10
 EP_LEN = 200
-N_WORKER = 10                # parallel workers
+N_WORKER = 2                # parallel workers
 GAMMA = 0.9                 # reward discount factor
 A_LR = 0.0001               # learning rate for actor
 C_LR = 0.0002               # learning rate for critic
@@ -113,6 +113,7 @@ class PPO(object):
                     self.saver.save(self.sess, '/home/icenter/tmp/Crazy/params', write_meta_graph=False)
                     self.last_ep = GLOBAL_EP
 
+                print('End_update')
                 UPDATE_EVENT.clear()        # updating finished
                 GLOBAL_UPDATE_COUNTER = 0   # reset counter
                 ROLLING_EVENT.set()         # set roll-out available
@@ -166,6 +167,7 @@ class Worker(object):
             ep_r = 0
             buffer_s, buffer_a, buffer_r = [], [], []
             t = 0
+            print('start : %d' % self.wid)
             while True:
                 if not ROLLING_EVENT.is_set():                  # while global PPO is updating
                     ROLLING_EVENT.wait()                        # wait until PPO is updated
@@ -185,7 +187,7 @@ class Worker(object):
 
                 GLOBAL_UPDATE_COUNTER += 1               # count to minimum batch size, no need to wait other workers
                 if GLOBAL_UPDATE_COUNTER >= MIN_BATCH_SIZE or done:
-                    print(GLOBAL_EP)
+                    #print(GLOBAL_EP)
                     if done:
                         v_s_ = 0   # terminal
                     else:
@@ -200,10 +202,11 @@ class Worker(object):
                     buffer_s, buffer_a, buffer_r = [], [], []
                     QUEUE.put(np.hstack((bs, ba, br)))          # put data in the queue
                     if GLOBAL_UPDATE_COUNTER >= MIN_BATCH_SIZE or GLOBAL_EP >= EP_MAX:
-                        print('update')
+                        #print('update')
                         ROLLING_EVENT.clear()       # stop collecting data
                         UPDATE_EVENT.set()          # globalPPO update
                     if GLOBAL_EP >= EP_MAX:         # stop training
+                        print('Train over')
                         COORD.request_stop()
                         break
 
