@@ -206,7 +206,7 @@ class Worker(object):
                         ROLLING_EVENT.clear()       # stop collecting data
                         UPDATE_EVENT.set()          # globalPPO update
                     if GLOBAL_EP >= EP_MAX:         # stop training
-                        print('Train over')
+                        print('Train over %d' % self.wid)
                         COORD.request_stop()
                         break
 
