@@ -33,7 +33,7 @@ Map=\
  '#oo^#oo0#'
 ]
 
-EP_MAX = 10
+EP_MAX = 100
 EP_LEN = 200
 N_WORKER = 2                # parallel workers
 GAMMA = 0.9                 # reward discount factor
