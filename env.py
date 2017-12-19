@@ -27,7 +27,7 @@ REWARD_BOX = 10 #reward of box
 REWARD_ITEM = 5  #reward of item
 REWARD_KILL =100 #reawrd of kill opponent
 PUNISH = 50 #punishment
-REWARD_BOMB=5
+REWARD_BOMB=200
 PUNISH_PER_ROUND=1
 
 class player:
@@ -288,6 +288,7 @@ class Maze(object):
                     self.bombs_xy.append((last_xy[0],last_xy[1]))
                     self.maze[last_xy[0]][last_xy[1]]='b'
                     self.maze_[last_xy[0]][last_xy[1]]=max(self.maze_[last_xy[0]][last_xy[1]],self.players[player_id].boom_r)
+                    value[player_id] += REWARD_BOMB
             else:
                 # update position
                 new_xy=(last_xy[0]+base_action[0],last_xy[1]+base_action[1])
@@ -400,12 +401,6 @@ class Maze(object):
         self.accu_value[0] += value[0]
         self.accu_value[1] += value[1]
 
-        #BOMB_REWARD
-        for A in actions:
-            player_id=A[0]
-            action=A[1]
-            if(action==4 and self.players[player_id].boom_num+1<=self.players[player_id].max_boom_num):
-                value[player_id]+=REWARD_BOMB
         #PUNISH_PER_ROUND
         value[0]-=PUNISH_PER_ROUND
         value[1]-=PUNISH_PER_ROUND

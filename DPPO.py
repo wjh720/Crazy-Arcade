@@ -34,7 +34,7 @@ Map=\
  '#oo^#oo0#'
 ]
 
-EP_MAX = 100
+EP_MAX = 10
 EP_LEN = 200
 N_WORKER = 1                # parallel workers
 GAMMA = 0.9                 # reward discount factor
@@ -250,5 +250,7 @@ if __name__ == '__main__':
             a = load_PPO.choose_action(s)
             baseline_a = base.choose_action(env, 1)
             s, r, done = env.step({(0, a), (1, U.ch(baseline_a))})
+            if (r[0] != -1):
+                print(r)
             if (done):
                 break
