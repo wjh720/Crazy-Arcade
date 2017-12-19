@@ -55,6 +55,13 @@ class PPO(object):
 
         # critic
         with tf.variable_scope('critic'):
+            '''
+            conv1 = tf.layers.conv2d(self.tfs, 16, 8, 4, 'same', activation=tf.nn.relu)
+            conv2 = tf.layers.conv2d(conv1, 32, 4, 2, 'same', activation=tf.nn.relu)
+            flat = U.flattenallbut0(conv2)
+            l1 = tf.layers.dense(flat, 256, activation=tf.nn.relu)
+            self.v = tf.layers.dense(l1, 1)
+            '''
             conv1 = tf.layers.conv2d(self.tfs, 16, 8, 4, 'same', activation=tf.nn.relu)
             conv2 = tf.layers.conv2d(conv1, 32, 4, 2, 'same', activation=tf.nn.relu)
             flat = U.flattenallbut0(conv2)
