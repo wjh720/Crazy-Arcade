@@ -33,13 +33,13 @@ Map=\
  '#oo^#oo0#'
 ]
 
-EP_MAX = 500
+EP_MAX = 10000
 EP_LEN = 200
 N_WORKER = 2                # parallel workers
 GAMMA = 0.9                 # reward discount factor
 A_LR = 0.0001               # learning rate for actor
 C_LR = 0.0002               # learning rate for critic
-MIN_BATCH_SIZE = 32         # minimum batch size for updating PPO
+MIN_BATCH_SIZE = 64         # minimum batch size for updating PPO
 UPDATE_STEP = 20            # loop update operation n-steps
 EPSILON = 0.2               # for clipping surrogate objective
 GAME = 'Pendulum-v0'
@@ -117,7 +117,7 @@ class PPO(object):
 
                 if (GLOBAL_EP >= self.last_ep + 50):
                     print('Saving!')
-                    self.saver.save(self.sess, '/home/icenter/tmp/Crazy/params', write_meta_graph=False)
+                    self.saver.save(self.sess, '/home/icenter/tmp/Crazy/params%d' % GLOBAL_EP, write_meta_graph=False)
                     self.last_ep = GLOBAL_EP
 
                 print('End_update')
@@ -208,7 +208,7 @@ class Worker(object):
                     bs, ba, br = np.vstack(buffer_s), np.vstack(buffer_a), np.array(discounted_r)[:, np.newaxis]
                     buffer_s, buffer_a, buffer_r = [], [], []
                     QUEUE.put(np.hstack((bs, ba, br)))          # put data in the queue
-                    if GLOBAL_UPDATE_COUNTER >= MIN_BATCH_SIZE or done:
+                    if GLOBAL_UPDATE_COUNTER >= MIN_BATCH_SIZE:
                         #print('update')
                         ROLLING_EVENT.clear()       # stop collecting data
                         UPDATE_EVENT.set()          # globalPPO update

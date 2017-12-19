@@ -143,8 +143,8 @@ class PPO(object):
         #print(s.shape)
         #time.sleep(1)
         s = s[np.newaxis, :]
-        #print(self.sess.run(self.probs, {self.tfs: s}))
-        #time.sleep(1)
+        print(self.sess.run(self.probs, {self.tfs: s}))
+        time.sleep(1)
         a = self.sess.run(self.sample_op, {self.tfs: s})[0]
         return a
 
